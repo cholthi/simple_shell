@@ -6,4 +6,11 @@
  *
  */
 
+
+void ssh_loop(void);
+char * ssh_read_line(void);
+char ** ssh_tokenize_line(char *line);
+int ssh_execute(char **args);
+int ssh_launch(char **args);
+
 #endif
