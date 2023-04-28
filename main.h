@@ -5,7 +5,7 @@
  * Desc: Declaration for types and function of the shell
  *
  */
-
+extern char **environ;
 
 void ssh_loop(void);
 char * ssh_read_line(void);

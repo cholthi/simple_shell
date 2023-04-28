@@ -6,8 +6,6 @@
 #include <string.h>
 #include <unistd.h>
 
-extern char **environ;
-
 /**
  * main - A simple shell program
  *
