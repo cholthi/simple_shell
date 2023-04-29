@@ -18,7 +18,7 @@ int main(void)
 	int status;
 
 	do {
-		printf("($) ");
+		printf("$ ");
 		line = ssh_read_line();
 		args = ssh_tokenize_line(line);
 		status = ssh_execute(args);
