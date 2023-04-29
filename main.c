@@ -11,7 +11,7 @@
  *
  * Return: int 0 on success or any number above 0 on failure
  */
-int main(void)
+int main(int argc, char **argv)
 {
 	char *line;
 	char **args;
@@ -21,7 +21,8 @@ int main(void)
 		printf("$ ");
 		line = ssh_read_line();
 		args = ssh_tokenize_line(line);
-		status = ssh_execute(args);
+		if (argc)
+			status = ssh_execute(args, argv);
 
 		free(line);
 		free(args);
@@ -37,7 +38,7 @@ int main(void)
  * Return: Int The process return status
  */
 
-int ssh_launch(char **args)
+int ssh_launch(char **args, char **argv)
 {
 	pid_t pid;
 	int status;
@@ -48,12 +49,12 @@ int ssh_launch(char **args)
 	{
 
 		if (execve(args[0], args, environ) == -1)
-			perror("hsh");
+			perror(argv[0]);
 
 		exit(EXIT_FAILURE);
 	}
 	else if (pid < 0)
-		perror("hsh");
+		perror(argv[0]);
 	else
 	{
 		do {
@@ -69,11 +70,11 @@ int ssh_launch(char **args)
  *
  * Return: int The process return status
  */
-int ssh_execute(char **args)
+int ssh_execute(char **args, char **argv)
 {
 
 	if (args[0] == NULL)
 		return (1);
 
-	return (ssh_launch(args));
+	return (ssh_launch(args, argv));
 }

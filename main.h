@@ -13,7 +13,7 @@ extern char **environ;
 void ssh_loop(void);
 char *ssh_read_line(void);
 char **ssh_tokenize_line(char *line);
-int ssh_execute(char **args);
-int ssh_launch(char **args);
+int ssh_execute(char **args, char **argv);
+int ssh_launch(char **args, char **argv);
 
 #endif
