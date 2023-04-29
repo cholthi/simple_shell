@@ -18,7 +18,9 @@ int main(int argc, char **argv)
 	int status;
 
 	do {
-		printf("$ ");
+		_putchar('$');
+		_putchar(' ');
+
 		line = ssh_read_line();
 		args = ssh_tokenize_line(line);
 		if (argc)
