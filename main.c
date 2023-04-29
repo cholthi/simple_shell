@@ -1,82 +1,44 @@
-#include "main.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <string.h>
-#include <unistd.h>
+#include "shell.h"
 
 /**
- * main - A simple shell program
+ * main - entry point
+ * @ac: arg count
+ * @av: arg vector
  *
- * Return: int 0 on success or any number above 0 on failure
+ * Return: 0 on success, 1 on error
  */
-int main(int argc, char **argv)
+int main(int ac, char **av)
 {
-	char *line;
-	char **args;
-	int status;
+	info_t info[] = { INFO_INIT };
+	int fd = 2;
 
-	do {
-		_putchar('$');
-		_putchar(' ');
+	asm ("mov %1, %0\n\t"
+		"add $3, %0"
+		: "=r" (fd)
+		: "r" (fd));
 
-		line = ssh_read_line();
-		args = ssh_tokenize_line(line);
-		if (argc)
-			status = ssh_execute(args, argv);
-
-		free(line);
-		free(args);
-	} while (status);
-
+	if (ac == 2)
+	{
+		fd = open(av[1], O_RDONLY);
+		if (fd == -1)
+		{
+			if (errno == EACCES)
+				exit(126);
+			if (errno == ENOENT)
+			{
+				_eputs(av[0]);
+				_eputs(": 0: Can't open ");
+				_eputs(av[1]);
+				_eputchar('\n');
+				_eputchar(BUF_FLUSH);
+				exit(127);
+			}
+			return (EXIT_FAILURE);
+		}
+		info->readfd = fd;
+	}
+	populate_env_list(info);
+	read_history(info);
+	hsh(info, av);
 	return (EXIT_SUCCESS);
-}
-
-/**
- * ssh_launch - Launches the process based on the given command line arguments
- * @args: A null terminated array of strings command line arguments
- *
- * Return: Int The process return status
- */
-
-int ssh_launch(char **args, char **argv)
-{
-	pid_t pid;
-	int status;
-	/*char *arrev[] = {"USER=CHOL",NULL}; */
-
-	pid = fork();
-	if (pid == 0)
-	{
-
-		if (execve(args[0], args, environ) == -1)
-			perror(argv[0]);
-
-		exit(EXIT_FAILURE);
-	}
-	else if (pid < 0)
-		perror(argv[0]);
-	else
-	{
-		do {
-			waitpid(pid, &status, WUNTRACED);
-		} while (!WIFEXITED(status) && !WIFSIGNALED(status));
-	}
-
-	return (1);
-}
-/**
- * ssh_execute - Luanches a process based on given arguments
- * @args: Array of null terminated strings, Arguments to our shell
- *
- * Return: int The process return status
- */
-int ssh_execute(char **args, char **argv)
-{
-
-	if (args[0] == NULL)
-		return (1);
-
-	return (ssh_launch(args, argv));
 }
